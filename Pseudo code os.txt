@@ -1,0 +1,688 @@
+Here’s the main logic for each of the lab experiments outlined previously, in the form of C code structure and explanation.
+
+### 1. **Create a new process and display process IDs**
+```c
+#include <stdio.h>
+#include <unistd.h>
+
+int main() {
+    pid_t pid = fork();
+    if (pid == 0) {
+        printf("Child Process ID: %d\n", getpid());
+        printf("Parent Process ID: %d\n", getppid());
+    } else {
+        printf("Parent Process ID: %d\n", getpid());
+    }
+    return 0;
+}
+```
+
+### 2. **Copy the content of one file to another**
+```c
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+int main() {
+    int source = open("source.txt", O_RDONLY);
+    int destination = open("destination.txt", O_WRONLY | O_CREAT, 0644);
+    char buffer[1024];
+    ssize_t bytes;
+    
+    while ((bytes = read(source, buffer, sizeof(buffer))) > 0) {
+        write(destination, buffer, bytes);
+    }
+    
+    close(source);
+    close(destination);
+    return 0;
+}
+```
+
+### 3. **First Come First Served (FCFS) CPU Scheduling**
+```c
+#include <stdio.h>
+
+typedef struct {
+    int arrival_time;
+    int burst_time;
+    int waiting_time;
+    int turnaround_time;
+} Process;
+
+int main() {
+    Process processes[] = { /* Initialize processes */ };
+    int num_processes = sizeof(processes) / sizeof(processes[0]);
+    
+    for (int i = 0; i < num_processes; i++) {
+        // Calculate waiting time and turnaround time for FCFS
+        processes[i].waiting_time = (i == 0) ? 0 : processes[i-1].waiting_time + processes[i-1].burst_time;
+        processes[i].turnaround_time = processes[i].waiting_time + processes[i].burst_time;
+    }
+
+    return 0;
+}
+```
+
+### 4. **Shortest Job First (SJF) Scheduling**
+```c
+#include <stdio.h>
+
+typedef struct {
+    int burst_time;
+    int waiting_time;
+    int turnaround_time;
+} Process;
+
+int main() {
+    Process processes[] = { /* Initialize processes */ };
+    int num_processes = sizeof(processes) / sizeof(processes[0]);
+
+    // Sort processes by burst time (ascending order)
+    sort(processes, num_processes);
+
+    for (int i = 0; i < num_processes; i++) {
+        // Calculate waiting time and turnaround time
+    }
+
+    return 0;
+}
+```
+
+### 5. **Priority Scheduling**
+```c
+#include <stdio.h>
+
+typedef struct {
+    int priority;
+    int burst_time;
+    int waiting_time;
+    int turnaround_time;
+} Process;
+
+int main() {
+    Process processes[] = { /* Initialize processes */ };
+    int num_processes = sizeof(processes) / sizeof(processes[0]);
+
+    // Sort processes by priority (highest priority first)
+    sort(processes, num_processes);
+
+    for (int i = 0; i < num_processes; i++) {
+        // Calculate waiting time and turnaround time
+    }
+
+    return 0;
+}
+```
+
+### 6. **Preemptive Priority Scheduling**
+```c
+#include <stdio.h>
+
+typedef struct {
+    int priority;
+    int burst_time;
+    int remaining_time;
+} Process;
+
+int main() {
+    Process processes[] = { /* Initialize processes */ };
+    int num_processes = sizeof(processes) / sizeof(processes[0]);
+
+    while (/* processes remain */) {
+        // Select highest priority process
+        // Execute the process
+        // Preempt if necessary
+    }
+
+    return 0;
+}
+```
+
+### 7. **Non-preemptive Shortest Job First (SJF) Scheduling**
+```c
+#include <stdio.h>
+
+typedef struct {
+    int burst_time;
+} Process;
+
+int main() {
+    Process processes[] = { /* Initialize processes */ };
+    int num_processes = sizeof(processes) / sizeof(processes[0]);
+
+    // Sort processes by burst time
+    // Execute processes in order of sorted burst time
+    return 0;
+}
+```
+
+### 8. **Round Robin Scheduling**
+```c
+#include <stdio.h>
+
+typedef struct {
+    int burst_time;
+    int remaining_time;
+} Process;
+
+int main() {
+    Process processes[] = { /* Initialize processes */ };
+    int num_processes = sizeof(processes) / sizeof(processes[0]);
+    int quantum = 4;  // Time slice
+
+    while (/* processes remain */) {
+        // Execute each process for a time slice (quantum)
+        // If process is not finished, put it back in the queue
+    }
+    return 0;
+}
+```
+
+### 9. **Inter-process Communication (Shared Memory)**
+```c
+#include <stdio.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <unistd.h>
+
+int main() {
+    key_t key = ftok("file", 65);
+    int shmid = shmget(key, 1024, 0666 | IPC_CREAT);
+    char *str = (char*) shmat(shmid, NULL, 0);
+    
+    printf("Write Data: ");
+    gets(str);  // Read input from user
+    printf("Data written: %s\n", str);
+    
+    shmdt(str);
+    return 0;
+}
+```
+
+### 10. **Inter-process Communication (Message Queue)**
+```c
+#include <stdio.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+
+typedef struct {
+    long mtype;
+    char mtext[100];
+} message;
+
+int main() {
+    key_t key = ftok("progfile", 65);
+    int msgid = msgget(key, 0666 | IPC_CREAT);
+    
+    message msg;
+    msg.mtype = 1;
+    printf("Write message: ");
+    gets(msg.mtext);
+    
+    msgsnd(msgid, &msg, sizeof(msg), 0);
+    msgrcv(msgid, &msg, sizeof(msg), 1, 0);
+    
+    printf("Received: %s\n", msg.mtext);
+    msgctl(msgid, IPC_RMID, NULL);
+    return 0;
+}
+```
+
+### 11. **Multithreading**
+```c
+#include <pthread.h>
+
+void* thread_function(void* arg) {
+    printf("Thread is running\n");
+    return NULL;
+}
+
+int main() {
+    pthread_t thread;
+    pthread_create(&thread, NULL, thread_function, NULL);
+    pthread_join(thread, NULL);
+    return 0;
+}
+```
+
+### 12. **Dining Philosophers Problem**
+```c
+#include <pthread.h>
+#include <stdio.h>
+
+pthread_mutex_t chopsticks[5];
+
+void* philosopher(void* num) {
+    int phil = *((int*)num);
+    
+    while(1) {
+        // Think
+        pthread_mutex_lock(&chopsticks[phil]);
+        pthread_mutex_lock(&chopsticks[(phil + 1) % 5]);
+        
+        // Eat
+        
+        pthread_mutex_unlock(&chopsticks[phil]);
+        pthread_mutex_unlock(&chopsticks[(phil + 1) % 5]);
+    }
+    return NULL;
+}
+
+int main() {
+    pthread_t tid[5];
+    int phil[5];
+    
+    for (int i = 0; i < 5; i++) {
+        phil[i] = i;
+        pthread_create(&tid[i], NULL, philosopher, (void*)&phil[i]);
+    }
+    
+    for (int i = 0; i < 5; i++) {
+        pthread_join(tid[i], NULL);
+    }
+    
+    return 0;
+}
+```
+
+### 13. **Memory Allocation Strategies (First Fit, Best Fit, Worst Fit)**
+```c
+void* allocate_memory(int size) {
+    // First Fit, Best Fit, Worst Fit memory allocation logic
+    return allocated_memory;
+}
+
+int main() {
+    // Test memory allocation strategies (e.g., First Fit, Best Fit, Worst Fit)
+}
+```
+
+### 14. **Single Level Directory**
+```c
+#include <stdio.h>
+
+int main() {
+    // Create and list files in a single-level directory
+    return 0;
+}
+```
+
+### 15. **Two Level Directory**
+```c
+#include <stdio.h>
+
+int main() {
+    // Create subdirectories and files in two-level directory structure
+    return 0;
+}
+```
+
+### 16. **Random Access File for Employee Details**
+```c
+#include <stdio.h>
+
+int main() {
+    FILE *file = fopen("employee_data.dat", "rb+");
+    // Perform random access read/write operations for employee details
+    fclose(file);
+}
+```
+
+### 17. **Banker's Algorithm for Deadlock Avoidance**
+```c
+int is_safe_state(int processes[], int available[], int allocation[], int request[]) {
+    // Implement Banker's Algorithm to check if system is in a safe state
+    return safe_state;
+}
+
+int main() {
+    // Apply Banker's algorithm for resource allocation and safety check
+}
+```
+
+### 18. **Producer-Consumer using Semaphores**
+```c
+#include <semaphore.h>
+
+sem_t mutex, empty, full;
+
+void producer() {
+    // Produce item
+}
+
+void consumer() {
+    // Consume item
+}
+
+int main() {
+    sem_init(&mutex, 0, 1);
+    sem_init(&empty, 0, N);
+    sem_init(&full, 0, 0);
+    // Create producer and consumer threads
+    return 0;
+}
+```
+
+### 19. **Process Synchronization with Mutex**
+```c
+#include <pthread.h>
+#include <stdio.h>
+
+pthread_mutex_t lock;
+
+void critical_section() {
+    pthread_mutex_lock(&lock);
+    // Critical section code
+    pthread_mutex_unlock(&lock);
+}
+
+int main() {
+    pthread_mutex_init(&lock, NULL);
+    // Create threads and execute critical section
+    pthread_mutex_destroy(&lock);
+    return 0;
+}
+```
+
+### 20. **Reader-Writer Problem using Semaphores**
+```c
+#include <semaphore.h>
+
+sem_t mutex, wrt;
+
+void reader() {
+    sem_wait(&mutex);
+    // Read
+    sem_post(&mutex);
+}
+
+void writer() {
+    sem_wait(&wrt);
+    // Write
+    sem_post(&wrt);
+}
+
+int main() {
+    sem_init(&mutex, 0, 1);
+    sem_init(&wrt, 0, 1);
+    // Create threads for readers and writers
+    return 0;
+}
+```
+
+These are the basic C program structures and logic for the mentioned lab experiments. You can adapt and expand them according to the specific needs of your course.
+Here’s the **main logic** for all the programs mentioned. Each logic block represents the core functionality of the corresponding task.
+
+---
+
+### 21. **Worst Fit Memory Management**
+- Allocate memory block to the process with the largest available size that fits.
+
+```c
+for (i = 0; i < num_processes; i++) {
+    int worst_block = -1;
+    for (j = 0; j < num_blocks; j++) {
+        if (block_sizes[j] >= process_sizes[i] && 
+            (worst_block == -1 || block_sizes[j] > block_sizes[worst_block])) {
+            worst_block = j;
+        }
+    }
+    if (worst_block != -1) {
+        block_sizes[worst_block] -= process_sizes[i];
+        allocation[i] = worst_block;
+    }
+}
+```
+
+---
+
+### 22. **Best Fit Memory Management**
+- Allocate memory block to the process with the smallest available size that fits.
+
+```c
+for (i = 0; i < num_processes; i++) {
+    int best_block = -1;
+    for (j = 0; j < num_blocks; j++) {
+        if (block_sizes[j] >= process_sizes[i] && 
+            (best_block == -1 || block_sizes[j] < block_sizes[best_block])) {
+            best_block = j;
+        }
+    }
+    if (best_block != -1) {
+        block_sizes[best_block] -= process_sizes[i];
+        allocation[i] = best_block;
+    }
+}
+```
+
+---
+
+### 23. **First Fit Memory Management**
+- Allocate the first available memory block that fits the process.
+
+```c
+for (i = 0; i < num_processes; i++) {
+    for (j = 0; j < num_blocks; j++) {
+        if (block_sizes[j] >= process_sizes[i]) {
+            block_sizes[j] -= process_sizes[i];
+            allocation[i] = j;
+            break;
+        }
+    }
+}
+```
+
+---
+
+###2 4. **UNIX System Calls for File Management**
+- Demonstrate basic file operations like `open`, `read`, `write`, and `close`.
+
+```c
+int fd = open("file.txt", O_RDWR);
+if (fd != -1) {
+    write(fd, "Hello, World!", 13);
+    lseek(fd, 0, SEEK_SET);
+    read(fd, buffer, 13);
+    close(fd);
+}
+```
+
+---
+
+### 25. **UNIX I/O System Calls**
+- Use advanced calls like `fcntl`, `seek`, `stat`, `opendir`, and `readdir`.
+
+```c
+struct stat file_stat;
+stat("file.txt", &file_stat);
+
+DIR *dir = opendir(".");
+struct dirent *entry;
+while ((entry = readdir(dir)) != NULL) {
+    printf("%s\n", entry->d_name);
+}
+closedir(dir);
+```
+
+---
+
+### 26. **File Management Operations**
+- Demonstrate file creation, reading, and writing.
+
+```c
+FILE *fp = fopen("file.txt", "w");
+fprintf(fp, "File Management Operations");
+fclose(fp);
+```
+
+---
+
+### 27. **Simulate `ls` UNIX Command**
+- List all files in the current directory.
+
+```c
+DIR *dir = opendir(".");
+struct dirent *entry;
+while ((entry = readdir(dir)) != NULL) {
+    printf("%s\n", entry->d_name);
+}
+closedir(dir);
+```
+
+---
+
+### 28. **Simulate `grep` UNIX Command**
+- Search for a string in a file.
+
+```c
+while (fgets(buffer, sizeof(buffer), file)) {
+    if (strstr(buffer, search_string)) {
+        printf("%s", buffer);
+    }
+}
+```
+
+---
+
+###2 9. **Classical Process Synchronization Problem**
+- Solve Producer-Consumer using semaphores.
+
+```c
+sem_wait(&empty);
+sem_wait(&mutex);
+// Critical section (produce/consume)
+sem_post(&mutex);
+sem_post(&full);
+```
+
+---
+
+### 30. **Thread-Related Concepts**
+- Create, join, and manage threads.
+
+```c
+pthread_t thread;
+pthread_create(&thread, NULL, thread_function, NULL);
+pthread_join(thread, NULL);
+pthread_exit(NULL);
+```
+
+---
+
+### 31. **FIFO Paging Technique**
+- Simulate FIFO paging algorithm.
+
+```c
+if (page not in memory) {
+    replace oldest page in memory;
+}
+```
+
+---
+
+### 32. **Least Recently Used (LRU) Paging Technique**
+- Replace the least recently used page.
+
+```c
+if (page not in memory) {
+    replace the page with the least recent access time;
+}
+```
+
+---
+
+### 33. **Optimal Paging Technique**
+- Replace the page not needed for the longest time.
+
+```c
+if (page not in memory) {
+    replace the page that will not be used for the longest time in the future;
+}
+```
+
+---
+
+### 34. **Sequential File Allocation Strategy**
+- Read records sequentially.
+
+```c
+for (i = 0; i < num_records; i++) {
+    access record[i];
+}
+```
+
+---
+
+### 35. **Indexed File Allocation Strategy**
+- Access records using an index block.
+
+```c
+for (i = 0; i < index_block.size; i++) {
+    access record[index_block[i]];
+}
+```
+
+---
+
+### 36. **Linked File Allocation Strategy**
+- Traverse linked blocks.
+
+```c
+while (current_block != NULL) {
+    access current_block;
+    current_block = current_block->next;
+}
+```
+
+---
+
+### 37. **First Come First Served (FCFS) Disk Scheduling**
+- Process disk requests sequentially.
+
+```c
+for (i = 0; i < num_requests; i++) {
+    seek_time += abs(requests[i] - current_position);
+    current_position = requests[i];
+}
+```
+
+---
+
+### 38. **SCAN Disk Scheduling Algorithm**
+- Move in one direction, then reverse.
+
+```c
+sort(requests);
+for (i = 0; i < num_requests; i++) {
+    process requests in one direction;
+}
+```
+
+---
+
+### 39. **C-SCAN Disk Scheduling Algorithm**
+- Process requests circularly.
+
+```c
+sort(requests);
+for (i = 0; i < num_requests; i++) {
+    process requests from start after reaching the end;
+}
+```
+
+---
+
+### 40. **File Access Permissions and User Types**
+- Check and set file permissions.
+
+```c
+stat("file.txt", &file_stat);
+if (file_stat.st_mode & S_IRUSR) {
+    printf("User has read permission\n");
+}
+```
+
+---
+
+These are the main logic snippets for the mentioned tasks. You can expand them into full C programs by adding necessary variables, I/O handling, and user interaction. Let me know if you’d like a detailed explanation for any specific program!
