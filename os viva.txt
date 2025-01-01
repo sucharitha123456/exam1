@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html >
+<head>
+
+os- It acts as a bridge between the hardware and the user applications,
+process,file system,memory,device management
+
+System call-It acts as the interface between a running program and the OS
+Comparing                             Unix/Linux and Windows System Calls
+Category	                      Unix/Linux	Windows                             cpu scheduling----|-preemptive-round robin,srtf,priority preemptive
+Process Control	                      fork(), exec()	CreateProcess()                                       |-non-preemptive-fcfs,sjf,priority non-preemptive
+File Management	                      open(), read()	CreateFile(), ReadFile()
+Device Management	              ioctl()	        DeviceIoControl()
+Communication	                      pipe(), socket()	CreatePipe(), socket()                among all the algorithms sjf is best because it have the least avg waiting time and 
+Information Maintenance	              getpid(), alarm()	GetCurrentProcessId()                 avg turnaround time and reduces daly for each process with shortest burst time 
+memory management                     mmap(), brk()     VirtualAlloc(), HeapAlloc() 
+
+CPU Scheduling is the process by which an operating system determines which processes in the ready queue should be allocated to the CPU for execution. 
+PReemptive,non-preemtive
+ In FCFS, processes are scheduled in the order they arrive in the ready queue. 
+Turnaround Time (TAT): Total time taken for a process from arrival to completion.
+TAT=Completion Time (CT)−Arrival Time (AT)
+Waiting Time (WT): Time a process spends waiting in the queue.
+WT=Turnaround Time (TAT)−Burst Time (BT)Response Time (RT): Time from arrival to the start of execution.
+Response Time (RT): Time from arrival to the start of execution.
+RT=Start Time−Arrival Time (AT)
+preemptive-If a higher-priority process arrives, it interrupts the currently running process.
+non-preemptive-Once a process starts executing, it cannot be interrupted until it finishes.
+round robin-is a CPU scheduling algorithm that assigns a fixed time quantum to each process in the ready queue. 
+disadvantage of rr-High context-switching 
+                                                                |
+                    is the process of saving and restoring a CPU's state to allow multitasking 
+ipc using shared memory
+Inter-Process Communication (IPC) - refers to the mechanisms that allow processes to communicate with each other and share data in a multi-process environment, such as an operating system
+          |
+ Synchronization is the process ensuring that multiple processes or threads that share resources (such as memory, files, or devices) do not interfere with each other,leading to race condition
+          |
+A race condition occurs when two or more processes access shared resources concurrently
+ipc using message queue
+Message Queues are a form of Inter-Process Communication (IPC) that allows processes to communicate with each other by sending and receiving messages
+thread-smallest unit of execution
+multithreading
+execution model that allows a single process to be divided into multiple threads, which can run concurrently
+dining philosopers is a synchronization problem that manages shared resources among multiple processes or threads. 
+Contiguous Memory Allocation:each process  is allocated to single block of memory
+first fit-which comes first is placed first
+worst fit- largest block, leaving the largest possible remaining space.
+best fit-smallest available block that is large enough to accommodate the process.
+Organizing files in a single-level directory structure means that all files will be placed directly in a single folder, without any subdirectories. 
+To organize files using a two-level directory structure, you would divide the files into two groups:
+Root Level: A main directory containing high-level folders.
+Subdirectories: Each folder under the root can hold specific types of files.
+A random access file allows direct access to any part of the file without having to read it sequentially.
+deadlock means when two or more processes are unable to  proceed because each process is waiting for other to release resource.
+Deadlock avoidance refers to the methods that prevent the system from entering a state where deadlock could occur.
+ It checks if the system will still be in a safe state after each request for resources.
+producer-consumer problem is a synchronization  problem where the producer generates data and puts it into a buffer, while the consumer takes the data from the buffer.
+ Reader-Writer Problem is a synchronization  problem  where a shared resource is accessed by multiple processes, some of which are readers  and some are writers .
+UNIX File Management System Calls:
+open(): Opens or creates a file.
+read(): Reads data from a file.
+write(): Writes data to a file.
+close(): Closes a file descriptor.
+The fcntl() system call is used to get or set file descriptor properties (such as setting a file descriptor to non-blocking mode).
+The lseek() system call is used to set or get the file pointer's current offset.
+The stat() system call retrieves various information about a file, such as its size, modification time, and file permissions.
+opendir() opens a directory for reading, and readdir() reads the directory's contents one entry at a time.
+The readdir function is used to read directory entries in POSIX(portable operating system interface)-compliant operating systems like UNIX and Linux. 
+The ls command in UNIX provides a flexible way to view and manage files and directories.
+The grep command in UNIX is used for searching text using patterns.
+Classical Process Synchronization Problems refer to a set of classic synchronization problems in operating systems that deal with the coordination and management of concurrent processes.
+Create:
+Creating a thread involves spawning a new execution thread in a program using pthread_create.
+Join:
+Waiting for a thread to finish its execution and retrieving its result using pthread_join.
+Equal:
+Checking if two thread IDs are equal using pthread_equal.
+Exit:
+Terminating a thread gracefully using pthread_exit.
+Paging is a memory management scheme that divides both physical memory and logical memory into fixed-size blocks called pages and frames,
+First-In-First-Out (FIFO) Paging:
+A page replacement algorithm where the oldest page in memory is replaced when a new page is loaded and memory is full.
+Least Recently Used (LRU) Paging:
+Replaces the page that has not been used for the longest time when a new page needs to be loaded.
+Optimal Paging:
+Replaces the page that will not be used for the longest time in the future.
+File Allocation Strategies
+1)Sequential File Allocation:
+Files are stored contiguously, both physically and logically.Create a simulation where records are stored in a contiguous array, and accessing a record requires traversing from the beginning.
+2)Indexed File Allocation:
+An index block contains pointers to the data blocks of a file.Simulate an index table that maps logical block numbers to physical block numbers.
+Linked Allocation stores files as a linked list of disk blocks scattered across the disk. Each block contains data and a pointer to the next block. The directory stores a pointer to the first block.
+Disk scheduling algorithms manage the order in which disk I/O requests are served by the disk head.
+FCFS is the simplest disk scheduling algorithm where the disk head moves to the tracks in the order the requests arrive.
+SCAN (also called the Elevator Algorithm) moves the disk arm in one direction to the end of the disk, serves all requests in that direction, and then reverses the direction.
+C-SCAN (Circular SCAN) is a variation of SCAN where, instead of reversing direction at the end, the disk arm goes back to the beginning and starts again.
+In Linux, files have access permissions that control the actions users can perform on them.
+Read (r): Permission to read the contents of the file.
+Write (w): Permission to modify the contents of the file.
+Execute (x): Permission to execute the file .
+
+
+
+
+
+
+
